@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f6f3ee">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="释放">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<title>释放</title>
+<style>
+:root{--bg:#f6f3ee;--card:#fffdfa;--text:#292724;--muted:#77716a;--line:#e8e0d7}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;min-height:100dvh;display:grid;place-items:center;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+main{width:min(92vw,520px);min-height:430px;padding:44px 28px;background:var(--card);border:1px solid var(--line);border-radius:28px;display:flex;flex-direction:column;justify-content:center;box-shadow:0 16px 50px rgba(50,40,30,.07)}
+h1{text-align:center;font-size:27px;line-height:1.45;margin:0 0 28px}.sub{text-align:center;color:var(--muted);margin:-14px 0 24px}.buttons{display:grid;gap:12px}
+button,input{width:100%;min-height:56px;border-radius:16px;font-size:18px}
+button{border:1px solid var(--line);background:white;padding:12px;color:var(--text);cursor:pointer}button:active{transform:scale(.985)}
+input{border:1px solid var(--line);padding:0 16px;margin-bottom:12px;background:white;color:var(--text)}
+</style>
+</head>
+<body><main id="app"></main>
+<script>
+const app=document.getElementById('app'); let feeling='',want='';
+function page(q,sub=''){app.innerHTML=`<h1>${q}</h1>${sub?`<div class="sub">${sub}</div>`:''}<div class="buttons"></div>`;return app.querySelector('.buttons')}
+function b(t,f){const x=document.createElement('button');x.textContent=t;x.onclick=f;return x}
+function start(){const x=page('现在是什么感受？','可以写下来，也可以只在心里感受它。');const i=document.createElement('input');i.placeholder='例如：焦虑、恐惧、不知所措……';x.append(i,b('继续',()=>{feeling=i.value.trim();chooseWant()}),b('跳过，不需要命名',()=>{feeling='';chooseWant()}))}
+function chooseWant(){const x=page('现在是什么想要？',feeling?`刚才的感受：${feeling}`:'');['控制','认同','安全'].forEach(v=>x.append(b(v,()=>{want=v;canRelease()})))}
+function canRelease(){const x=page('可以放它离开吗？',want?`想要${want}`:'');x.append(b('可以',when),b('不可以',allowExist))}
+function when(){page('什么时候？').append(b('现在',more))}
+function more(){const x=page('还有吗？');x.append(b('有',canRelease),b('没有',start))}
+function allowExist(){const x=page('允许它存在吗？');x.append(b('允许',allowLeave),b('不允许',allowLeave))}
+function allowLeave(){const x=page('允许它离开吗？');x.append(b('允许',more),b('不允许',allowLeave))}
+start();
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js'))}
+</script></body></html>
